@@ -2,15 +2,15 @@
 // and archive them.
 
 var sweepOlderThanNDays = 3;
-var expiredLabelString="Expires";
+var expiresLabelString="expires";
 var debug = false;
 
 function SweepExpiredEmail(e) {
   
   // Use a label to indicate when an autoresponse has been sent.  Create it if it doesn't exist.
-  expiredLabel = GmailApp.getUserLabelByName(expiredLabelString);
-  if (!expiredLabel) {
-    expiredLabel = GmailApp.createLabel(expiredLabelString);
+  expiresLabel = GmailApp.getUserLabelByName(expiresLabelString);
+  if (!expiresLabel) {
+    expiresLabel = GmailApp.createLabel(expiresLabelString);
   }
 
   var yesterday = new Date();
@@ -18,7 +18,9 @@ function SweepExpiredEmail(e) {
   var dateString = yesterday.getFullYear() + '/' + (yesterday.getMonth()+1) + '/' +yesterday.getDate();
  
   // Consider emails only from the last N days.  Using a search filter for this.
-  var threads = GmailApp.search("to:me after:" + dateString + " AND !is:starred AND !label:" + expiredLabelString);
+  var query = "to:me in:inbox before:" + dateString + " AND !is:starred AND label:" + expiresLabelString
+  doLog(debug, "Using Query : " + query)
+  var threads = GmailApp.search(query);
   
   for (var i = 0; i < threads.length; i++) {
     doLog(debug, "Archiving thread with subject : " + threads[i].getFirstMessageSubject())
